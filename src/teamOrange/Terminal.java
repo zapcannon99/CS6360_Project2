@@ -8,6 +8,7 @@ import java.util.SortedMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import static java.lang.System.out;
+import static java.lang.System.setOut;
 
 /**
  *  @author Team Orange
@@ -218,7 +219,7 @@ public class Terminal {
 
     /**
      *  Stub method for creating new tables
-     *  @param queryString is a String of the user input
+     *
      */
     public static void parseCreateTable(String createTableString) {
 
@@ -239,7 +240,21 @@ public class Terminal {
             RandomAccessFile tableFile = new RandomAccessFile(tableFileName, "rw");
             tableFile.setLength(pageSize);
             tableFile.seek(0);
-            tableFile.writeInt(63);
+            tableFile.writeBytes("Hello");
+            tableFile.writeFloat((float)3.14);
+            tableFile.writeInt(45);
+            tableFile.writeByte(0xff);
+            tableFile.seek(0);
+            byte[] b=new byte[10];
+            tableFile.read(b,0,5);
+            System.out.println(new String(b));
+            //tableFile.seek(5);
+            System.out.println(tableFile.readFloat());
+            System.out.println(tableFile.readInt());
+            System.out.println(Integer.toHexString(tableFile.read()));
+            tableFile.seek(0);
+
+
         }
         catch(Exception e) {
             System.out.println(e);
