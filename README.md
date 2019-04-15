@@ -4,7 +4,7 @@
 In my implementation a Page.java is a class. Every time we need a page we can create or call the previously created object of this class.
 Each page acts has an object of Page.java class. 
 
-###Creating A New Page (Page Object)
+### Creating A New Page (Page Object)
 ```
    Page Page1=new Page(tableFileName,1,interiorIndexBTreePage);
 ```
@@ -20,7 +20,7 @@ create table tableName;
 ```
 tableName can be replaced by any name you want to give to table without the ".tbl" extension.
 
-###Mapper CLass
+## Mapper CLass
 This class stores all the constants, which can be used throughout any java classes by 
 ```
 import static teamOrange.Mapper.*;
