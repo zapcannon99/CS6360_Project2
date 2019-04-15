@@ -47,7 +47,7 @@ Writing :
 * float readFloatAt(int offset) : To read a Float from a page
 * int readStringAt(int offset) : To read a String from a page
 
-## Mapper CLass
+## Mapper Class
 This class stores all the constants, which can be used throughout any java classes by 
 ```
 import static teamOrange.Mapper.*;
