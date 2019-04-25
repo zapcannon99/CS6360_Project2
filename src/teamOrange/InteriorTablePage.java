@@ -1,12 +1,11 @@
 package teamOrange;
 
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import static java.lang.System.out;
 import static teamOrange.Mapper.*;
 
 public class InteriorTablePage extends Page {
-
-    ArrayList<Short>
 
     public InteriorTablePage(){
         super();
@@ -44,11 +43,15 @@ public class InteriorTablePage extends Page {
             // Then proceed to read the cells in an interior page
             tableFile.seek(pageOffset + startOfCellContent);
             for(int k = 0; k < noOfCells; k++){
-
+                readCell();
             }
 
         } catch(Exception e){
             out.println(e.toString());
         }
+    }
+
+    public ArrayList<DataElement> readCell(){
+
     }
 }
