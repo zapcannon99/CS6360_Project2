@@ -1,7 +1,6 @@
 package teamOrange;
 
 import java.io.RandomAccessFile;
-import java.util.Random;
 
 public class InteriorTableCell extends Cell {
     int leftChildPageNo;

@@ -15,12 +15,13 @@ public class Page {
     public static final String path = "data/tables/";
 
     byte typeOfPage;
-    short noOfCells=0;
+    short noOfCells = 0;
     short startOfCellContent = pageSize;
-    int rightPageNo = -1;
-    ArrayList<Short> cellOffsets;
+    int rightPageNo = -1;           // -1 means no page right?
+    ArrayList<Short> cellOffsets;   // This is the arraylist of the offsets pointing to the cells
+    ArrayList<Cell> cells;          // The idea is that this arraylist, when being read in, will be in the same order as cellOffsets
     int pageNo;
-    int pageOffset;
+    int pageOffset;                 // Where the page starts in the file
     RandomAccessFile tableFile;
 
     Page(){}
@@ -51,6 +52,7 @@ public class Page {
 
             }
 
+            // Evil Joel is indexing starting 0, He changed it cuz files systems start indexing at 0 too
             tableFile = new RandomAccessFile(path+tableFileName, "rw");
             pageOffset = getPageOffset(pageNo);
             if(tableFile.length() > pageOffset + pageSize)
@@ -82,6 +84,13 @@ public class Page {
         }
     }
 
+    /**
+     * Gets a page from specified tableFileName and page no. Uses the pages 1st byte to get the
+     * proper subclass to return
+     * @param tableFileName
+     * @param pageNo
+     * @return a subclass of Page
+     */
     public static Page getPage(String tableFileName, int pageNo){
         int pageOffset = getPageOffset(pageNo);
         try{
@@ -104,11 +113,17 @@ public class Page {
             }
         } catch(Exception e){
             out.println(e.toString());
+            return null;
         }
 
 
     }
 
+    /**
+     * Just returns the page offset
+     * @param pageNo page number indexing from 0
+     * @return
+     */
     public static int getPageOffset(int pageNo){
         return pageNo * pageSize;
     }

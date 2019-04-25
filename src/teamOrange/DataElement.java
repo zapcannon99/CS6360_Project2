@@ -1,3 +1,14 @@
+/**
+ * This class helps provide a way of keeping together the datatype and value. If one can think of a better method, let me know.
+ *
+ * Basically, you just pass whatever you need into DataElement and it should handle it for you
+ * Then if you want to get the value out, .getValue()
+ * There is also a helper function called sizeof(), dunno if we need it though
+ *
+ *
+ * NEEDS TO BE REWORKED FOR NEW TYPECODES IN MAPPING
+ */
+
 package teamOrange;
 
 import java.util.Calendar;
@@ -26,6 +37,11 @@ public class DataElement {
         value_long = value.getTimeInMillis();
     }
     public DataElement(String value) {
+        if(value == null){
+            datatype = typeCodeNull;
+        } else {
+
+        }
         int length = typeCodeText + value.length();
         if(length > 0xff){
             // Need to raise error
@@ -34,46 +50,11 @@ public class DataElement {
             value_string = value;
         }
     }
-    // if one passes a null, for object, then one must pass the size of the null
-    public DataElement(Object o, byte size){
-        if(o != null){
-            //throw an error if not null
-        } else {
-            switch(size){
-                case 1:
-                    datatype = typeCodeNull1B;
-                    break;
-                case 2:
-                    datatype = typeCodeNull2B;
-                    break;
-                case 4:
-                    datatype = typeCodeNull4B;
-                    break;
-                case 8:
-                    datatype = typeCodeNull8B;
-                    break;
-                default:
-                    //throw an error
-                    break;
-            }
-        }
-        ((Integer)o)
-    }
 
     public Object getValue(){
         switch(datatype) {
-            case typeCodeNull1B:
-                Byte b = null;
-                return b;
-            case typeCodeNull2B:
-                Short s = null;
-                return s;
-            case typeCodeNull4B:
-                Integer i = null;
-                return i;
-            case typeCodeNull8B:
-                Long l = null;
-                return l;
+            case typeCodeNull
+                return null;
             case typeCodeTinyInt:
                 // return (byte)long_value // doesn't work in this version of Java
                 return value_long.byteValue();
@@ -98,4 +79,21 @@ public class DataElement {
         }
     }
 
+    public int sizeof(){
+        switch(datatype){
+            case typeCodeNull1B:
+            case typeCodeTinyInt:
+            case typeCodeNull2B:
+            case typeCodeSmallInt:
+            case typeCodeNull4B:
+            case typeCodeReal:
+            case typeCodeInt:
+            case typeCodeNull8B:
+            case typeCodeBigInt:
+            case typeCodeDouble:
+            case typeCodeDateTime:
+            case typeCodeDate:
+            case typeCodeText:
+        }
+    }
 }
