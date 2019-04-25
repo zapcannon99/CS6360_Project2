@@ -2,17 +2,28 @@ package teamOrange;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import static teamOrange.Mapper.pageSize;
+import java.util.ArrayList;
+import static java.lang.System.out;
+import static teamOrange.Mapper.*;
 
 public class Page {
-    byte noOfCells=0;
+    public static final short noOfCellOffset = 0x01;
+    public static final short startOfCellContentOffset = 0x03;
+    public static final short rightPageNoOffset = 0x05;
+    public static final short cellOffsetsOffset = 0x09;
+
+    public static final String path = "data/tables/";
+
     byte typeOfPage;
-    byte startOfCellContent;
-    int pagePointer;
-    int array;
+    short noOfCells=0;
+    short startOfCellContent = pageSize;
+    int rightPageNo = -1;
+    ArrayList<Short> cellOffsets;
     int pageNo;
-    String path="data/tables/";
+    int pageOffset;
     RandomAccessFile tableFile;
+
+    Page(){}
 
     Page(String tableFileName,int pageNo,byte typeOfPage)
     {
@@ -41,13 +52,14 @@ public class Page {
             }
 
             tableFile = new RandomAccessFile(path+tableFileName, "rw");
-            tableFile.setLength((pageNo)*pageSize);
-            tableFile.seek((pageNo-1)*pageSize);
+            pageOffset = getPageOffset(pageNo);
+            if(tableFile.length() > pageOffset + pageSize)
+                tableFile.setLength((pageNo + 1)*pageSize);
+            tableFile.seek(pageOffset);
             tableFile.writeByte(typeOfPage);
+            tableFile.seek(tableFile.getFilePointer() + 2); // skip 2 bytes to write the current Cell Start
+            // If we are making a brand new page, this is something that needs to be handled by getting metadata
             this.pageNo=pageNo;
-
-
-
 
 //            tableFile.writeBytes("Hello");
 //            tableFile.writeFloat((float)3.14);
@@ -63,12 +75,42 @@ public class Page {
 //            System.out.println(Integer.toHexString(tableFile.read()));
 //            tableFile.seek(0);
 
-
         }
         catch (Exception e)
         {
 
         }
+    }
+
+    public static Page getPage(String tableFileName, int pageNo){
+        int pageOffset = getPageOffset(pageNo);
+        try{
+            RandomAccessFile table = new RandomAccessFile(path + tableFileName, "rw");
+            table.seek(pageOffset);
+            Byte pagetype = table.readByte();
+            switch(pagetype){
+                case interiorIndexBTreePage:
+                    // Nancy's stuff goes here
+                    break;
+                case interiorTableBTreePage:
+                    return new InteriorTablePage(table, pageOffset);
+                case leafIndexBTreePage:
+                    // Nancy's stuff goes here
+                    break;
+                case leafTableBTreePage:
+                    break;
+                default:
+                    throw new Exception("ERROR: Page type not recognized in the page header.");
+            }
+        } catch(Exception e){
+            out.println(e.toString());
+        }
+
+
+    }
+
+    public static int getPageOffset(int pageNo){
+        return pageNo * pageSize;
     }
 
     int readByteAt(int offset){
@@ -230,6 +272,4 @@ public class Page {
         }
         return true;
     }
-
-
 }
