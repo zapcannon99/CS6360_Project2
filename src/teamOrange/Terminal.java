@@ -1,13 +1,11 @@
 package teamOrange;
 
-import java.io.RandomAccessFile;
-import java.io.File;
-import java.io.FileReader;
 import java.util.Scanner;
-import java.util.SortedMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import static java.lang.System.out;
+import static teamOrange.Mapper.*;
+
 
 /**
  *  @author Team Orange
@@ -20,15 +18,11 @@ import static java.lang.System.out;
  */
 public class Terminal {
     /* This can be changed to whatever you like */
-    static String prompt = "OrangeSQL> ";
-    static String version = "v0.0";
-    static String copyright = "Â©2019 Team Orange";
     static boolean isExit = false;
     /*
      * Page size for alll files is 512 bytes by default.
      * You may choose to make it user modifiable
      */
-    static long pageSize = 512;
 
     /*
      *  The Scanner class is used to collect user commands from the prompt
@@ -218,7 +212,7 @@ public class Terminal {
 
     /**
      *  Stub method for creating new tables
-     *  @param queryString is a String of the user input
+     *
      */
     public static void parseCreateTable(String createTableString) {
 
@@ -236,10 +230,19 @@ public class Terminal {
             /*  Create RandomAccessFile tableFile in read-write mode.
              *  Note that this doesn't create the table file in the correct directory structure
              */
-            RandomAccessFile tableFile = new RandomAccessFile(tableFileName, "rw");
-            tableFile.setLength(pageSize);
-            tableFile.seek(0);
-            tableFile.writeInt(63);
+            teamOrange.Page Page1=new teamOrange.Page(tableFileName,1,interiorIndexBTreePage);
+            Page1.writeByteAt(5, (byte) 0xFC);
+            Page1.writeIntAt(7,43);
+            Page1.writeFloatAt(12, (float) 3.14);
+            Page1.writeStringAt(20,"Hello");
+
+            System.out.println(Integer.toHexString(Page1.readByteAt(5)));
+            System.out.println(Page1.readIntAt(7));
+            System.out.println(Page1.readFloatAt(12));
+            System.out.println(Page1.readStringAt(20,5));
+
+
+
         }
         catch(Exception e) {
             System.out.println(e);
