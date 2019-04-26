@@ -59,12 +59,8 @@ public class DataElement {
 
         }
         int length = value.size();
-        if(length > 0xff){
-            // Need to raise error
-        } else {
-            datatype = length;
-            value_array = value;
-        }
+        datatype = length;
+        value_array = value;
     }
     public DataElement(Object value, byte dataType) {
         switch(dataType){
