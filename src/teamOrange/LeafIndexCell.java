@@ -40,5 +40,19 @@ public class LeafIndexCell extends Cell {
         }
     }
 
-
+    public int getBytesPayload(){
+        return bytesPayload;
+    }
+    public byte getNumRids(){
+        return numRids;
+    }
+    public byte getDataType(){
+        return dataType;
+    }
+    public Object getIndexVal(){
+        return indexVal;
+    }
+    public ArrayList<Short> getRids(){
+        return rids;
+    }
 }

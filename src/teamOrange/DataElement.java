@@ -120,7 +120,7 @@ public class DataElement {
             case typeCodeSmallInt:
                 return value_long.shortValue();
             case typeCodeInt:
-                return value_long.intValue();;
+                return value_long.intValue();
             case typeCodeBigInt:
                 return value_long;
 //            case typeCodeReal:
@@ -136,11 +136,10 @@ public class DataElement {
             default:
                 // Case of typeCodeArray
                 return value_array;
-            break;
         }
     }
 
-    public int sizeof(){
+    /*public int sizeof(){
         switch(datatype){
             case typeCodeNull1B:
             case typeCodeTinyInt:
@@ -156,5 +155,5 @@ public class DataElement {
             case typeCodeDate:
             case typeCodeText:
         }
-    }
+    }*/
 }

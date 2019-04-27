@@ -8,7 +8,7 @@ public class InteriorIndexCell extends Cell{
     int bytesPayload;
     byte numRids;
     byte dataType;
-    ArrayList indexVal;
+    Object indexVal;
     ArrayList<Short> rids;
 
     /**
@@ -31,8 +31,8 @@ public class InteriorIndexCell extends Cell{
             payload.add(new DataElement(dataType));
 
             ReadIndexValue r = new ReadIndexValue();
-            r.ReadUnknown(table,dataType,bytesPayload,numRids); //looks up dataType serial code and reads based on size
-            payload.add(new DataElement(indexVal.get(0),dataType));
+            indexVal = r.ReadUnknown(table,dataType,bytesPayload,numRids); //looks up dataType serial code and reads based on size
+            payload.add(new DataElement(indexVal,dataType));
 
             for(int i=0; i<numRids; i++)
                 rids.add(table.readShort());
@@ -42,5 +42,24 @@ public class InteriorIndexCell extends Cell{
         catch(Exception e){
             System.out.println(e.toString());
         }
+    }
+
+    public int getLeftChildPageNo(){
+        return leftChildPageNo;
+    }
+    public int getBytesPayload(){
+        return bytesPayload;
+    }
+    public byte getNumRids(){
+        return numRids;
+    }
+    public byte getDataType(){
+        return dataType;
+    }
+    public Object getIndexVal(){
+        return indexVal;
+    }
+    public ArrayList<Short> getRids(){
+        return rids;
     }
 }

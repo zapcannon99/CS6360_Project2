@@ -34,7 +34,7 @@ public class Terminal {
     static Scanner scanner = new Scanner(System.in).useDelimiter(";");
 
     /** ***********************************************************************
-     *  Main method
+     *  teamOrange.Main method
      */
     public static void startTerminal(String[] args) {
 

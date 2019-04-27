@@ -55,12 +55,12 @@ public class Cell {
      * @param offset ABSOLUTE offset that the record lies at
      * @return
      */
-    public static Cell read(RandomAccessFile table, byte type, int offset){
+   /* public static Cell read(RandomAccessFile table, byte type, int offset){
         try {
             table.seek(offset);
             read(table, type);
         } catch(Exception e){
             System.out.println(e.toString());
         }
-    }
+    }*/
 }

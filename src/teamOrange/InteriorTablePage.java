@@ -43,7 +43,7 @@ public class InteriorTablePage extends Page {
             // Then proceed to read the cells in an interior page
             tableFile.seek(pageOffset + startOfCellContent);
             for(int k = 0; k < noOfCells; k++){
-                readCell();
+                //readCell();
             }
 
         } catch(Exception e){
@@ -51,7 +51,7 @@ public class InteriorTablePage extends Page {
         }
     }
 
-    public ArrayList<DataElement> readCell(){
+    /*public ArrayList<DataElement> readCell(){
 
-    }
+    }*/
 }
