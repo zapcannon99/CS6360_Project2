@@ -34,7 +34,7 @@ public class Terminal {
     static Scanner scanner = new Scanner(System.in).useDelimiter(";");
 
     /** ***********************************************************************
-     *  Main method
+     *  teamOrange.Main method
      */
     public static void startTerminal(String[] args) {
 
@@ -230,7 +230,7 @@ public class Terminal {
             /*  Create RandomAccessFile tableFile in read-write mode.
              *  Note that this doesn't create the table file in the correct directory structure
              */
-            Page Page1=new Page(tableFileName,1,interiorIndexBTreePage);
+            teamOrange.Page Page1=new teamOrange.Page(tableFileName,1,interiorIndexBTreePage);
             Page1.writeByteAt(5, (byte) 0xFC);
             Page1.writeIntAt(7,43);
             Page1.writeFloatAt(12, (float) 3.14);

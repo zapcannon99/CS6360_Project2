@@ -84,6 +84,10 @@ public class Page {
         }
     }
 
+    public static void createCellArray(){
+
+    }
+
     /**
      * Gets a page from specified tableFileName and page no. Uses the pages 1st byte to get the
      * proper subclass to return
@@ -93,6 +97,7 @@ public class Page {
      */
     public static Page getPage(String tableFileName, int pageNo){
         int pageOffset = getPageOffset(pageNo);
+        Page page = null;
         try{
             RandomAccessFile table = new RandomAccessFile(path + tableFileName, "rw");
             table.seek(pageOffset);
@@ -100,11 +105,13 @@ public class Page {
             switch(pagetype){
                 case interiorIndexBTreePage:
                     // Nancy's stuff goes here
+                    page = new InteriorIndexPage(table, pageOffset);
                     break;
                 case interiorTableBTreePage:
-                    return new InteriorTablePage(table, pageOffset);
+                    page = new InteriorTablePage(table, pageOffset);
                 case leafIndexBTreePage:
                     // Nancy's stuff goes here
+                    page = new LeafIndexPage(table, pageOffset);
                     break;
                 case leafTableBTreePage:
                     break;
@@ -115,8 +122,7 @@ public class Page {
             out.println(e.toString());
             return null;
         }
-
-
+        return page;
     }
 
     /**
@@ -145,6 +151,14 @@ public class Page {
             }
         }
         return 0;
+    }
+
+    public void incNoOfCells(){
+        noOfCells++;
+    }
+
+    public void updateStartOfCellContent(short offset){
+        startOfCellContent = offset;
     }
 
     int readIntAt(int offset){

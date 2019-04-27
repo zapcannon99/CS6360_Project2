@@ -3,6 +3,8 @@ package teamOrange;
 import teamOrange.DataElement;
 import java.util.ArrayList;
 import java.io.RandomAccessFile;
+
+import static java.lang.System.out;
 import static teamOrange.Mapper.*;
 
 public class Cell {
@@ -20,21 +22,30 @@ public class Cell {
      * @return
      */
     public static Cell read(RandomAccessFile table, byte type){
-        switch(type){
-            case interiorIndexBTreePage:
-                // Nancy's stuff goes here
+        Cell cell = null;
+        try {
+            switch (type) {
+                case interiorIndexBTreePage:
+                    // Nancy's stuff goes here
+                    cell = new InteriorIndexCell(table, type);
                 break;
-            case interiorTableBTreePage:
-                return new InteriorTableCell(table, type);
-            case leafIndexBTreePage:
-                // Nancy's stuff goes here
+                case interiorTableBTreePage:
+                    cell = new InteriorTableCell(table, type);
+                case leafIndexBTreePage:
+                    // Nancy's stuff goes here
+                    cell = new LeafIndexCell(table, type);
                 break;
-            case leafTableBTreePage:
-                break;
-            default:
-                throw new Exception("ERROR: Page type not recognized in the page header.");
-                )
+                case leafTableBTreePage:
+                    break;
+                default:
+                    throw new Exception("ERROR: Page type not recognized in the page header.");
+            }
         }
+        catch(Exception e){
+            out.println(e.toString());
+            return null;
+        }
+        return cell;
     }
 
     /**
@@ -44,12 +55,12 @@ public class Cell {
      * @param offset ABSOLUTE offset that the record lies at
      * @return
      */
-    public static Cell read(RandomAccessFile table, byte type, int offset){
+   /* public static Cell read(RandomAccessFile table, byte type, int offset){
         try {
             table.seek(offset);
             read(table, type);
         } catch(Exception e){
             System.out.println(e.toString());
         }
-    }
+    }*/
 }
