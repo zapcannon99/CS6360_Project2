@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class InteriorIndexCell extends Cell{
     int leftChildPageNo;
-    int bytesPayload;
+    short bytesPayload;
     byte numRids;
     byte dataType;
     Object indexVal;
@@ -47,7 +47,7 @@ public class InteriorIndexCell extends Cell{
     public int getLeftChildPageNo(){
         return leftChildPageNo;
     }
-    public int getBytesPayload(){
+    public short getBytesPayload(){
         return bytesPayload;
     }
     public byte getNumRids(){

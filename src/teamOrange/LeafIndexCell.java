@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import static teamOrange.Mapper.*;
 
 public class LeafIndexCell extends Cell {
-    int bytesPayload;
+    short bytesPayload;
     byte numRids;
     byte dataType;
     ArrayList indexVal;
@@ -40,7 +40,7 @@ public class LeafIndexCell extends Cell {
         }
     }
 
-    public int getBytesPayload(){
+    public short getBytesPayload(){
         return bytesPayload;
     }
     public byte getNumRids(){

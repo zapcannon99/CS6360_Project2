@@ -153,6 +153,14 @@ public class Page {
         return 0;
     }
 
+    public void incNoOfCells(){
+        noOfCells++;
+    }
+
+    public void updateStartOfCellContent(short offset){
+        startOfCellContent = offset;
+    }
+
     int readIntAt(int offset){
         if(offset>=pageSize)
         {
