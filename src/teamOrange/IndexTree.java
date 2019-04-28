@@ -166,7 +166,7 @@ public class IndexTree {
         short header = (short) 2;
         short leafIndexCellSize = (short) (leafIndexCell.bytesPayload + header);
         short cellWritePageOffset = (short) (startOfCellContent - leafIndexCellSize);
-        short cellWriteOffset = (short) Page.getPageOffset(page.pageNo);  //WHY int and NOT short???
+        short cellWriteOffset = (short) Page.getPageOffset(page.pageNo);  //WHY Page.getPageOffset=int and NOT short???
         try {
             tableFileName.seek(cellWriteOffset);
             tableFileName.write(leafIndexCell.bytesPayload);
