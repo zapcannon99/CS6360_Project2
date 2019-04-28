@@ -62,25 +62,9 @@ public class Page {
             tableFile.seek(tableFile.getFilePointer() + 2); // skip 2 bytes to write the current Cell Start
             // If we are making a brand new page, this is something that needs to be handled by getting metadata
             this.pageNo=pageNo;
-
-//            tableFile.writeBytes("Hello");
-//            tableFile.writeFloat((float)3.14);
-//            tableFile.writeInt(45);
-//            tableFile.writeByte(0xff);
-//            tableFile.seek(0);
-//            byte[] b=new byte[10];
-//            tableFile.read(b,0,5);
-//            System.out.println(new String(b));
-//            //tableFile.seek(5);
-//            System.out.println(tableFile.readFloat());
-//            System.out.println(tableFile.readInt());
-//            System.out.println(Integer.toHexString(tableFile.read()));
-//            tableFile.seek(0);
-
         }
-        catch (Exception e)
-        {
-
+        catch (Exception e){
+            System.out.println("ERROR: Problem creating page");
         }
     }
 

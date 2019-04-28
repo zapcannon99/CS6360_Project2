@@ -9,8 +9,8 @@ import static teamOrange.Mapper.*;
 
 public class Cell {
     byte typeOfCell;    // specifies the cell type. Must match the page, but we will have to work on how that is guaranteed
-    ArrayList<DataElement> header;  // Has all the parts of the header of a cell, regardless of type of cell
-    ArrayList<DataElement> payload; // Has all the parts of the payload, regardless of type of cell
+    ArrayList<DataElement> header;  // Has all the parts of the cell header right after cell read, regardless of type of cell
+    ArrayList<DataElement> payload; // Has all the parts of the cell payload right after cell read, regardless of type of cell
 
     // needed for inheritance
     public Cell(){}
@@ -27,15 +27,17 @@ public class Cell {
             switch (type) {
                 case interiorIndexBTreePage:
                     // Nancy's stuff goes here
-                    cell = new InteriorIndexCell(table, type);
-                break;
+                    //cell = new InteriorIndexCell(table);
+                    break;
                 case interiorTableBTreePage:
-                    cell = new InteriorTableCell(table, type);
+                    cell = new InteriorTableCell(table);
+                    break;
                 case leafIndexBTreePage:
                     // Nancy's stuff goes here
-                    cell = new LeafIndexCell(table, type);
-                break;
+                    //cell = new LeafIndexCell(table);
+                    break;
                 case leafTableBTreePage:
+                    cell = new LeafTableCell(table);
                     break;
                 default:
                     throw new Exception("ERROR: Page type not recognized in the page header.");
@@ -55,12 +57,15 @@ public class Cell {
      * @param offset ABSOLUTE offset that the record lies at
      * @return
      */
-   /* public static Cell read(RandomAccessFile table, byte type, int offset){
+    public static Cell read(RandomAccessFile table, byte type, int offset){
+        Cell cell;
         try {
             table.seek(offset);
-            read(table, type);
+            cell = read(table, type);
         } catch(Exception e){
             System.out.println(e.toString());
+            return null;
         }
-    }*/
+        return cell;
+    }
 }

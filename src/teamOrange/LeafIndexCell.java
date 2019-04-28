@@ -33,7 +33,7 @@ public class LeafIndexCell extends Cell {
 
             for(int i=0; i<numRids; i++)
                 rids.add(table.readShort());
-            payload.add(new DataElement(rids));
+            // payload.add(new DataElement(rids));
         }
         catch(Exception e){
             System.out.println(e.toString());
