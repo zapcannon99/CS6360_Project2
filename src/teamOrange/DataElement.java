@@ -27,10 +27,9 @@ public class DataElement {
     ArrayList value_array;
 
     /**
-     * Use this constructor for typeCodeNull. However, if you have to use this, something is wrong.
+     * Use this constructor for typeCodeNull. However, you can also use this constructor to manually make a DataElement;
      */
     public DataElement(){ datatype = typeCodeNull; }
-
     public DataElement(byte value) { datatype = typeCodeTinyInt; value_long = (long)value; }
     public DataElement(short value) { datatype = typeCodeSmallInt; value_long = (long)value; }
     public DataElement(int value) { datatype = typeCodeInt; value_long = (long)value; }
@@ -47,9 +46,24 @@ public class DataElement {
         if(value.HOUR + value.MINUTE + value.SECOND == 0){
             datatype = typeCodeDate;
         } else {
-            datatype = typeCodeDateTime;
+            if(value.getTimeInMillis() < 86400000){
+                datatype = typeCodeTime;
+            } else {
+                datatype = typeCodeDateTime;
+            }
         }
         value_long = value.getTimeInMillis();
+    }
+
+    /**
+     * Use this to make a DataElement of type typeCodeTime
+     * @param time Calendar time
+     * @return
+     */
+    public static DataElement DataElementTime(Calendar time){
+        DataElement e = new DataElement(time.getTimeInMillis());
+        e.setDatatype(typeCodeTime);
+        return e;
     }
 
     /**
@@ -158,6 +172,7 @@ public class DataElement {
                 return value_double;
             case typeCodeDateTime:
             case typeCodeDate:
+            case typeCodeTime:
                 Calendar c = Calendar.getInstance();
                 c.setTimeInMillis(value_long);
                 return c;
@@ -167,5 +182,48 @@ public class DataElement {
             default:
                 return value_string;
         }
+    }
+
+    public int sizeof(){
+        switch(datatype){
+            case typeCodeNull:
+                return 0;
+            case typeCodeTinyInt:
+                // return (byte)long_value // doesn't work in this version of Java
+                return 1;
+            case typeCodeSmallInt:
+                return 2;
+            case typeCodeInt:
+                return 4;
+            case typeCodeBigInt:
+                return 8;
+            case typeCodeDouble:
+                return 8;
+            case typeCodeTime:
+                return 4;
+            case typeCodeDateTime:
+            case typeCodeDate:
+                return 8;
+            case typeCodeYear:
+                return 1;
+            case typeCodeText:
+            default:
+                return datatype - typeCodeText;
+        }
+    }
+
+    /**
+     * Use this to get the size of some payload (ArrayList of DataElements in bytes. It does not include any headers that may be
+     * generated from said payload (for example, the bytes that specify the column type). It is the number of bytes for
+     * that specific payload
+     * @param payload
+     * @return How many bytes the ArrayList of DataElements would take on disk.
+     */
+    public static int sizeof(ArrayList<DataElement> payload){
+        int size = 0;
+        for (DataElement e : payload) {
+            size += e.sizeof();
+        }
+        return size;
     }
 }

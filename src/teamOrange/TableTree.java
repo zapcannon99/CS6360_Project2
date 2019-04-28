@@ -2,6 +2,7 @@ package teamOrange;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import static teamOrange.Mapper.*;
 
 /**
@@ -13,6 +14,7 @@ public class TableTree {
     RandomAccessFile table;
     int rootPage;   // Remember we are indexing by 0
     int pageCount;  // The count of how many pages exist in table
+    int rowCount;
 
     public TableTree(){}
 
@@ -49,10 +51,12 @@ public class TableTree {
 
     public Page addNewLeafPage(){
         Page p = new LeafTablePage(table, pageCount++);
+        return p;
     }
 
     public Page addNewInterPage(){
         Page p = new InteriorTablePage(table, pageCount++);
+        return p;
     }
 
     public TableTree(RandomAccessFile table){
@@ -80,14 +84,21 @@ public class TableTree {
         return find(rowid);
     }
 
-    public void insert(String table, int rowid){
-        table = Table.getTable();
+    /**
+     * Insert a record in a table. payload is only the list of record cell body's list of column data values
+     * @param table
+     * @param rowid
+     */
+    public void insert(ArrayList<DataElement> payload){
+        // Get to the page the record will be inserted in
 
-        Page pg = Page.getPage();
-
-        if(pg.rightPagePointer != null){
-
+        Page pg = Page.getPage(table, 0);
+        while(pg.rightPageNo != nullPageNo){
+            pg = Page.getPage(table, pg.rightPageNo);
         }
+
+        // Now that we have the page to insert, we need to see if it'll fit in the page
+
     }
 
     public int delete(){

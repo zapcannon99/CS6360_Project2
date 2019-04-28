@@ -6,6 +6,8 @@ public class Mapper {
     static final String copyright = "Â©2019 Team Orange";
     static final int pageSize = 512;
 
+    static final int nullPageNo = -1;
+
     static final byte interiorIndexBTreePage= 0x02;
     static final byte interiorTableBTreePage= 0x05;
     static final byte leafIndexBTreePage= 0x0a;

@@ -3,6 +3,7 @@ package teamOrange;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+
 import static java.lang.System.out;
 import static teamOrange.Mapper.*;
 
@@ -75,6 +76,45 @@ public class Page {
     /**
      * Gets a page from specified tableFileName and page no. Uses the pages 1st byte to get the
      * proper subclass to return
+     * @param table RandomAccessFile
+     * @param pageNo
+     * @return a subclass of Page
+     */
+    public static Page getPage(RandomAccessFile table, int pageNo){
+        int pageOffset = getPageOffset(pageNo);
+        Page page = null;
+        try{
+            table.seek(pageOffset);
+            Byte pagetype = table.readByte();
+            switch(pagetype){
+                case interiorIndexBTreePage:
+                    // Nancy's stuff goes here
+                    page = new InteriorIndexPage(table, pageOffset);
+                    break;
+                case interiorTableBTreePage:
+                    page = new InteriorTablePage(table, pageOffset);
+                case leafIndexBTreePage:
+                    // Nancy's stuff goes here
+                    page = new LeafIndexPage(table, pageOffset);
+                    break;
+                case leafTableBTreePage:
+                    break;
+                default:
+                    throw new Exception("ERROR: Page type not recognized in the page header.");
+            }
+        } catch(Exception e){
+            out.println(e.toString());
+            return null;
+        }
+        return page;
+    }
+
+    /**
+     * Gets a page from specified tableFileName string and page no. Uses the pages 1st byte to get the
+     * proper subclass to return
+     *
+     * WARNING: because we create a new RandomAccessFile object, we may run into a problem such as the seek location
+     * not being where we expect it to be
      * @param tableFileName
      * @param pageNo
      * @return a subclass of Page

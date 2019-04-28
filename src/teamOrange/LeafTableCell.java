@@ -17,6 +17,10 @@ public class LeafTableCell extends Cell {
     byte numOfColumns;
     ArrayList<DataElement> columns;
 
+    public LeafTableCell(){
+        super();
+    }
+
     /**
      * This constructor assumes that the file pointer offset is already at the location of the cell to be read. If this
      * is not the case, please use InteriorTableCell(RandomAccessFile table, int offset) to seek first;
@@ -97,5 +101,96 @@ public class LeafTableCell extends Cell {
         } catch(Exception e){
             System.out.println(e.toString());
         }
+    }
+
+    public int totalSize(){
+        return 6 + cellPayloadSize;
+    }
+
+
+    public ArrayList<DataElement> expandCell(){
+        ArrayList<DataElement> columnTypes = new ArrayList<DataElement>();
+        for(DataElement e : payload){
+            columnTypes.add(new DataElement((byte)e.getDatatye()));
+        }
+        ArrayList<DataElement> cell = new ArrayList<DataElement>();
+        cell.add(new DataElement(cellPayloadSize));
+        cell.add(new DataElement(rowid));
+        cell.add(new DataElement(numOfColumns));
+        cell.addAll(columnTypes);
+        cell.addAll(payload);
+        return cell;
+    }
+
+    /**
+     * Write cell to the ABSOLUTE offset in table
+     * @param table RandomAccessFile
+     * @param offset ABSOLUTE offset within file
+     */
+    void Write(RandomAccessFile table, int offset){
+        try{
+            table.seek(offset);
+
+            table.writeShort(cellPayloadSize);
+            table.writeInt(rowid);
+
+            table.writeByte(numOfColumns);
+            for(DataElement e : payload){
+                table.writeByte(e.getDatatye());
+            }
+
+            for(DataElement e : payload){
+                // First chekc if it's a string/text cuz it needs to be handled a little differently
+                if(e.getDatatye() >= typeCodeText){
+                    table.writeBytes(e.value_string);
+                } else {
+                    // Don't worry if it's not a string
+                    switch(e.sizeof()){
+                        case 0;
+                            //basically, the type code is a null or an empty string, skip it
+                            break;
+                        case 1:
+                            table.writeByte(e.value_long.byteValue());
+                        case 2:
+                            table.writeShort(e.value_long.shortValue());
+                        case 4:
+
+                        case 8:
+                        default:
+                            throw new Exception("Unexpected size for a DataElement");
+                    }
+                }
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: failed to write record. Reason: " + e);
+        }
+    }
+
+    /*************************************************************
+     * STATIC FUNCTIONS
+     **************************************************************/
+
+    /**
+     * Formats payload which only contains the column of data values and pre-appends the the cell header and body headers
+     * @param payload
+     * @return formated cell to be inserted
+     */
+    public static LeafTableCell createCell(int rowid, ArrayList<DataElement> payload){
+        LeafTableCell cell = new LeafTableCell();
+        cell.rowid = rowid;
+        cell.payload = payload;
+        cell.numOfColumns = (byte)payload.size();
+        cell.cellPayloadSize = calculatePayloadSize(payload);
+    }
+
+
+    public static short calculatePayloadSize(ArrayList<DataElement> payload){
+        short size = 0;
+        for(DataElement e : payload){
+            size += e.sizeof();
+        }
+        size += payload.size() + 1; // 1 byte for every column and the byte for number of columns
+
+        return size;
     }
 }
