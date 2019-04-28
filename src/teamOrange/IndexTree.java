@@ -8,8 +8,8 @@ public class IndexTree {
     Page page;
     Page parentPage;
     int pageNo;
-    /*
-    *Search method finds index cells that match a given indexVal for query, delete, and update
+    /* add num of pages in file + 1 or 2
+    * Search method finds index cells that match a given indexVal for query, delete, and update
     * and for insert, returns the position in the cellOffsets arraylist where the given indexVal should be inserted
     * SearchType: 0 = query, 1 = insert, 2 = delete, 3 = update
     */
@@ -85,7 +85,7 @@ public class IndexTree {
                         else return result; //already exists- CANNOT insert, returns empty arraylist
                     }else if (compare == 1) { //indexVal is less, return index of cells array
                         //insert
-                        if(searchType == 1){ //c position is where we want to insert, return empty arraylist
+                        if(searchType == 1){ //return c: position where we want to insert
                             result.add(c);
                             return result;
                         } //query,delete,update
@@ -113,72 +113,71 @@ public class IndexTree {
     *Insert method inserts new index cell into page, updates the cell offsets array, and header info
     * @param tableName
     * @param offset, of recently inserted record
-    * @param searchType, 1 = leaf Insert, 0 = interior insert
     * @return 0 = failure, 1 = success
     */
-    public int InsertIndex(String tableName, int offset, Page page, int insertType) throws IOException{
+    public int InsertIndex(String tableName, int offset) throws IOException{
         //create LeafIndexCell, get indexVal, and search for that indexVal
         RandomAccessFile tableFileName = new RandomAccessFile(tableName, "rw");
         LeafIndexCell leafIndexCell = new LeafIndexCell(tableFileName, offset);
-        InteriorIndexCell interiorIndexCell = new InteriorIndexCell(tableFileName, offset);
-        Object indexVal;
-        if(insertType == 1) {
-            indexVal = leafIndexCell.getIndexVal();
-        }
-        else{
-            indexVal = interiorIndexCell.getIndexVal();
-        }
+        Object indexVal = leafIndexCell.getIndexVal();
         ArrayList<Short> searchResult = new ArrayList <Short>();
+        //searchType: 1 = insert
         searchResult = Search(tableName, indexVal, 1);
         //if search return empty array, DO NOT insert
         //else, it will return the position of the cellsOffset array (where we want to insert)
         if(searchResult.size() == 0) //search found indexVal, CANNOT insert
             return 0;
         else { //INSERT AWAY!
-            //get cellcontentstart offset from page and insert there
-            //write leaf cell to file
-            short cellOffset = writeCellToFile(tableFileName, page, page.startOfCellContent, leafIndexCell, null, 1);
-            //update cell ptr array in page- with postion c returned from search
-
-            ArrayList<Short> temp1 = new ArrayList <Short>();
             short position = searchResult.get(0);
-            //move cellOffsets indeces right of position c into temp array
-            for(int i = position; i<page.cellOffsets.size(); i++) {
-                temp1.add(page.cellOffsets.get(i));
-                page.cellOffsets.remove(i);
-            }
-            //add new cell offset to cellOfsets and add old cell offsets
-            page.cellOffsets.add(position,cellOffset);
-            for(int i = 0; i < temp1.size(); i++){
-                page.cellOffsets.add(temp1.get(i));
-            }
-
-            ArrayList<Cell> temp2 = new ArrayList <Cell>();
-            //move cells right of position c into temp array
-            for(int i = position; i<page.cells.size(); i++) {
-                temp2.add(page.cells.get(i));
-                page.cells.remove(i);
-            }
-            //add new cell to cells array and add old cells to cells array
-            if(insertType == 1)
-                page.cells.add(leafIndexCell);
-            else
-                page.cells.add(interiorIndexCell);
-            for(int i = 0; i < temp2.size(); i++){
-                page.cells.add(temp2.get(i));
-            }
-
-            //write the cellOffsets array to page, increase noOfCells, and update startOfCellContent in page header
-            writeCellArrayToFile(tableFileName, page, page.cellOffsets);
-            page.incNoOfCells();
-            page.updateStartOfCellContent(cellOffset);
-            //check if splitting should occur
-            if(page.SplitLimit(page.cells,page.cellOffsets))
-                Split(tableName, page,1);
-            return 1; //SUCCESS
+            //insertType: 1 = leaf Insert, 0 = interior insert
+            int success = Insert(tableName,page,leafIndexCell,null,position,1);
+            return success;
         }
     }
 
+    public int Insert(String tableName, Page page, LeafIndexCell leafIndexCell, InteriorIndexCell interiorIndexCell, short position, int insertType) throws IOException{
+        RandomAccessFile tableFileName = new RandomAccessFile(tableName, "rw");
+        //get cellcontentstart offset from page and insert there
+        //write leaf cell to file
+        short cellOffset = writeCellToFile(tableFileName, page, page.startOfCellContent, leafIndexCell, null, 1);
+        //update cell ptr array in page- with postion c returned from search
+
+        ArrayList<Short> temp1 = new ArrayList <Short>();
+        //move cellOffsets indeces right of position c into temp array
+        for(int i = position; i<page.cellOffsets.size(); i++) {
+            temp1.add(page.cellOffsets.get(i));
+            page.cellOffsets.remove(i);
+        }
+        //add new cell offset to cellOfsets and add old cell offsets
+        page.cellOffsets.add(position,cellOffset);
+        for(int i = 0; i < temp1.size(); i++){
+            page.cellOffsets.add(temp1.get(i));
+        }
+
+        ArrayList<Cell> temp2 = new ArrayList <Cell>();
+        //move cells right of position c into temp array
+        for(int i = position; i<page.cells.size(); i++) {
+            temp2.add(page.cells.get(i));
+            page.cells.remove(i);
+        }
+        //add new cell to cells array and add old cells to cells array
+        if(insertType == 1)
+            page.cells.add(leafIndexCell);
+        else
+            page.cells.add(interiorIndexCell);
+        for(int i = 0; i < temp2.size(); i++){
+            page.cells.add(temp2.get(i));
+        }
+
+        //write the cellOffsets array to page, increase noOfCells, and update startOfCellContent in page header
+        writeCellArrayToFile(tableFileName, page, page.cellOffsets);
+        page.incNoOfCells();
+        page.updateStartOfCellContent(cellOffset);
+        //check if splitting should occur
+        if(page.SplitLimit(page.cells,page.cellOffsets))
+            Split(tableName, page,1);
+        return 1; //SUCCESS
+    }
     /*
     * @param tableName
     * @param splitType, 1 = leaf split, 0 = interior split
@@ -254,7 +253,13 @@ public class IndexTree {
             short cellOffset = writeCellToFile(tableFileName, newInteriorPage, newInteriorPage.startOfCellContent, null, newInteriorIndexCell,0);
             newInteriorPage.cellOffsets.add(cellOffset);
         }else { //there is an existing parent interior page
-            InsertIndex(tableName,parentPage.startOfCellContent,parentPage,0); //interior index insert
+            //move cell to parent page and check for splitting, call split if full
+            //find position within the parentpage that it needs to be inserted in- cellOffsets array
+            short position = 0;
+            while(Compare(leafIndexCell.indexVal,parentPage.cells.get(position)) == 1){ //while moved indexVal is less than the parentPage cell indexVal
+                position++;
+            }
+            Insert(tableName,parentPage,null, newInteriorIndexCell, position, 0);
         }
     }
 
