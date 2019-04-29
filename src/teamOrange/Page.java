@@ -15,8 +15,35 @@ public class Page {
         static FileWriter fileWriter;
 
 
-        public static void pris(){
-            System.out.println("This is pris");
+        public static boolean isIndexed(String tableName, String columnName)
+        {
+            try {
+                scanner = new Scanner(new File("catalog/davisbase_columns"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            scanner.useDelimiter("[,\n]");
+            int y=0;
+            tableName = tableName.substring(0, tableName.length() - 4);
+            Boolean isIndexed=false;
+            while (scanner.hasNext()) {
+                y = Integer.parseInt(scanner.next());//row_id
+                String tabName=scanner.next(); //TableName
+                String colName=scanner.next(); //colName
+
+                scanner.next(); //DataType
+                scanner.next(); //Ordinal
+                scanner.next(); //IsNullable
+                String isIndex=scanner.next(); //IsIndexed
+                if(tableName.equals(tabName.trim()) && columnName.equals(colName.trim()))
+                {
+                    if(isIndex.trim().equals("YES"))
+                    {
+                        isIndexed=true;
+                    }
+                }
+            }
+            return isIndexed;
         }
         public static boolean insert(String tableName,String[] columnArray)
         {
@@ -202,7 +229,7 @@ public class Page {
             StringArray[6]="TEXT";
             StringArray[7]="2";
             StringArray[8]="NO";
-            StringArray[9]="NO";
+            StringArray[9]="YES";
 
             StringArray[10]="col3";
             StringArray[11]="TEXT";
@@ -214,9 +241,14 @@ public class Page {
             StringArray[16]="TEXT";
             StringArray[17]="4";
             StringArray[18]="NO";
-            StringArray[19]="NO";
+            StringArray[19]="YES";
 
             Schema.insert(tableFileName,StringArray);
+            System.out.println(Schema.isIndexed(tableFileName,"col1"));
+            System.out.println(Schema.isIndexed(tableFileName,"col2"));
+            System.out.println(Schema.isIndexed(tableFileName,"col3"));
+            System.out.println(Schema.isIndexed(tableFileName,"col4"));
+
 
             tableFile.setLength((pageNo)*pageSize);
             tableFile.seek((pageNo-1)*pageSize);
