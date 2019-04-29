@@ -1,5 +1,5 @@
 # CS6360_Project2
-##Schema
+## Schema
 
 Schema is a Static Class inside Page class, Since, java doesn't allow standalone static classes.
 Schema basically just has two functions: (More can be created as neeed arises)
