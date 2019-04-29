@@ -1,7 +1,7 @@
 /* find table named <table_name>
  traverse every tuple for condition
  show selected cols*/
-/the condition may need to separate into colums, values and operations/
+/the condition may need to separate into colums, values and operators/
 queryHelper(List<String> cols,String table_name,List<String> condition)
 
 
