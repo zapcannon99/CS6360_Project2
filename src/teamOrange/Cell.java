@@ -15,6 +15,21 @@ public class Cell {
     // needed for inheritance
     public Cell(){}
 
+    public void Write(RandomAccessFile table){
+        switch(typeOfCell){
+            case leafTableBTreePage:
+                ((LeafTableCell)this).write(table);
+                break;
+            case interiorTableBTreePage:
+                ((InteriorTableCell)this).write(table);
+                break;
+            case leafIndexBTreePage:
+                break;
+            case interiorIndexBTreePage:
+                break;
+        }
+    }
+
     /**
      * This constructor will create a cell for a given location that's already been seeked to before calling this constructor
      * @param table table flie descriptor

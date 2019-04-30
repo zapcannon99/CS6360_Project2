@@ -8,6 +8,7 @@ import static java.lang.System.out;
 import static teamOrange.Mapper.*;
 
 public class Page {
+    // Starting positions of certain headers
     public static final short noOfCellOffset = 0x01;
     public static final short startOfCellContentOffset = 0x03;
     public static final short rightPageNoOffset = 0x05;
@@ -69,8 +70,13 @@ public class Page {
         }
     }
 
-    public static void createCellArray(){
+    public int remainingBytes(){
+        return startOfCellContent-(9 + cellOffsets.size()*2);
+    }
 
+    public void setPageNo(int newIndex){
+        pageNo = newIndex;
+        pageOffset = pageNo * pageSize;
     }
 
     /**
@@ -158,6 +164,63 @@ public class Page {
         return pageNo * pageSize;
     }
 
+    public void incNoOfCells(){
+        noOfCells++;
+    }
+
+    public void updateStartOfCellContent(short offset){
+        startOfCellContent = offset;
+    }
+
+    /**
+     * Removes the element with the offset from the arrayList
+     * @param index
+     */
+    public void remove(int index){
+        noOfCells--;
+        cellOffsets.remove(index);
+        cells.remove(index);
+    }
+
+    public void addCell(Cell cell){
+        int cell_size = 0;
+        switch(cell.typeOfCell){
+            case interiorIndexBTreePage:
+                // Nancy's stuff goes here
+                //cell = new InteriorIndexCell(table);
+                break;
+            case interiorTableBTreePage:
+                cell_size = ((InteriorTableCell)cell).totalSize();
+                break;
+            case leafIndexBTreePage:
+                // Nancy's stuff goes here
+                //cell = new LeafIndexCell(table);
+                break;
+            case leafTableBTreePage:
+                cell_size = ((LeafTableCell)cell).totalSize();
+                break;
+            default:
+                System.out.println("ERROR: Page type not recognized in the page header.");
+        }
+        int startAt = startOfCellContent - cell_size;
+        cellOffsets.add((short)startAt);
+        cells.add(cell);
+        noOfCells++;
+        startOfCellContent = (short)startAt;
+    }
+
+    public void write(){
+        switch(typeOfPage){
+            case leafTableBTreePage:
+                ((LeafTablePage)this).write();
+                break;
+            case interiorTableBTreePage:
+                ((InteriorTablePage)this).write();
+                break;
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
     int readByteAt(int offset){
         if(offset>=pageSize)
         {
@@ -175,14 +238,6 @@ public class Page {
             }
         }
         return 0;
-    }
-
-    public void incNoOfCells(){
-        noOfCells++;
-    }
-
-    public void updateStartOfCellContent(short offset){
-        startOfCellContent = offset;
     }
 
     int readIntAt(int offset){

@@ -127,10 +127,22 @@ public class LeafTableCell extends Cell {
      * @param table RandomAccessFile
      * @param offset ABSOLUTE offset within file
      */
-    void Write(RandomAccessFile table, int offset){
+    void write(RandomAccessFile table, int offset){
         try{
             table.seek(offset);
 
+            write(table);
+        } catch(Exception e){
+            System.out.println("ERROR: failed to write record. Reason: " + e);
+        }
+    }
+
+    /**
+     * Write cell to the already seeked table offset in table
+     * @param table RandomAccessFile
+     */
+    void write(RandomAccessFile table){
+        try{
             table.writeShort(cellPayloadSize);
             table.writeInt(rowid);
 
@@ -140,22 +152,31 @@ public class LeafTableCell extends Cell {
             }
 
             for(DataElement e : payload){
-                // First chekc if it's a string/text cuz it needs to be handled a little differently
+                // First check if it's a string/text cuz it needs to be handled a little differently
                 if(e.getDatatye() >= typeCodeText){
                     table.writeBytes(e.value_string);
                 } else {
                     // Don't worry if it's not a string
                     switch(e.sizeof()){
-                        case 0;
+                        case 0:
                             //basically, the type code is a null or an empty string, skip it
                             break;
                         case 1:
                             table.writeByte(e.value_long.byteValue());
+                            break;
                         case 2:
                             table.writeShort(e.value_long.shortValue());
+                            break;
                         case 4:
-
+                            table.write(e.value_long.intValue());
+                            break;
                         case 8:
+                            if(e.getDatatye() == typeCodeDouble){
+                                table.writeDouble(e.value_double);
+                            } else {
+                                table.writeLong(e.value_long);
+                            }
+                            break;
                         default:
                             throw new Exception("Unexpected size for a DataElement");
                     }
@@ -181,8 +202,24 @@ public class LeafTableCell extends Cell {
         cell.payload = payload;
         cell.numOfColumns = (byte)payload.size();
         cell.cellPayloadSize = calculatePayloadSize(payload);
+        return cell;
     }
 
+    /**
+     * Uses absolute offset
+     * @param table
+     * @param offset
+     * @return
+     */
+    public static LeafTableCell read(RandomAccessFile table, int offset){
+        try{
+            table.seek(offset);
+            return new LeafTableCell(table);
+        } catch(Exception e){
+            System.out.println("ERROR: " + e);
+            return null;
+        }
+    }
 
     public static short calculatePayloadSize(ArrayList<DataElement> payload){
         short size = 0;
