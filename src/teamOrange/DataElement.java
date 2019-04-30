@@ -107,6 +107,17 @@ public class DataElement {
         }
     }
 
+    public DataElement(ArrayList value) {
+        if(value == null){
+            datatype = typeCodeNull;
+        } else {
+
+        }
+        int length = value.size();
+        datatype = length;
+        value_array = value;
+    }
+
     public DataElement(Object value, byte dataType) {
         switch(dataType){
             case Mapper.typeCodeNull:
