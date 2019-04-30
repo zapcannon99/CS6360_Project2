@@ -1,6 +1,6 @@
 package teamOrange;
 
-public class Mapper {
+final public class Mapper {
     static final String prompt = "OrangeSQL> ";
     static final String version = "v0.0";
     static final String copyright = "Â©2019 Team Orange";

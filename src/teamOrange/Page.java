@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import static java.lang.System.out;
 import static teamOrange.Mapper.*;
+import static teamOrange.Schema.*;
 
 public class Page {
     // Starting positions of certain headers
@@ -29,8 +30,7 @@ public class Page {
 
     Page(){}
 
-    Page(String tableFileName,int pageNo,byte typeOfPage)
-    {
+    Page(String tableFileName,int pageNo,byte typeOfPage) {
         try{
             File directory = new File("data");
             if (! directory.exists()){
@@ -47,6 +47,7 @@ public class Page {
             else
             {
                 File subDirectory = new File("data/tables");
+
                 if (! subDirectory.exists()){
                     subDirectory.mkdir();
                     // If you require it to make the entire directory path including parents,
@@ -60,6 +61,7 @@ public class Page {
             if(tableFile.length() > pageOffset + pageSize)
                 tableFile.setLength((pageNo + 1)*pageSize);
             tableFile.seek(pageOffset);
+
             tableFile.writeByte(typeOfPage);
             tableFile.seek(tableFile.getFilePointer() + 2); // skip 2 bytes to write the current Cell Start
             // If we are making a brand new page, this is something that needs to be handled by getting metadata

@@ -1,4 +1,47 @@
 # CS6360_Project2
+## Schema
+
+Schema is a Static Class inside Page class, Since, java doesn't allow standalone static classes.
+Schema basically just has two functions: (More can be created as neeed arises)
+1. insert(String tableName,String[] columnData])
+2. isIndexed(String tableFileName,String columnName)
+
+### insert
+It is currently called in the parameterized constructor of Page.
+It is used to insert the table data in two files namely "davisbase_tables" and "davisbase_columns", which will be created inside a folder named catalog, which would be sibling to our data folder (Where tables are stored).
+Moreover, if the tableName is already inserted than it won't make any changes to any of the files.
+Inside the page constructor, we use Schema.insert as follows:
+```
+  String[] StringArray=new String[10];
+            StringArray[0]="col1"; //CloummnName
+            StringArray[1]="TEXT"; //DataType
+            StringArray[2]="1";   // Ordinal Value
+            StringArray[3]="NO";  // Isnullable
+            StringArray[4]="NO";   // IsIndexed
+
+            StringArray[5]="col2";
+            StringArray[6]="TEXT";
+            StringArray[7]="2";
+            StringArray[8]="NO";
+            StringArray[9]="YES";
+            
+            Schema.insert(tableFileName,StringArray);
+```
+
+### isIndexed
+isIndexed would return true if column in the table specified is Indexed, else it would return false
+It would look for "davisbase_columns" and search for the column.
+Inside the page constructor, we can use Schema.isIndexed as follows:
+
+```
+System.out.println(Schema.isIndexed(tableFileName,"col1"));
+            System.out.println(Schema.isIndexed(tableFileName,"col2"));
+            System.out.println(Schema.isIndexed(tableFileName,"col3"));
+            System.out.println(Schema.isIndexed(tableFileName,"col4"));
+```
+
+Note: tableFileName does contains ".tbl" extension at the end.
+
 ## Page
 
 In my implementation a Page.java is a class. Every time we need a page we can create or call the previously created object of this class.
