@@ -6,7 +6,8 @@ public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        int x =3;
+        Object x;
+        x =3.0;
         ArrayList arr = new ArrayList();
         System.out.println(arr.size());
         arr.add(x);

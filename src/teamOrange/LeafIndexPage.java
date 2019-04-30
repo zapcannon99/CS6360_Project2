@@ -42,7 +42,7 @@ public class LeafIndexPage extends Page {
             // Then proceed to read the cells in an interior page
             tableFile.seek(pageOffset + startOfCellContent); //get rid pageOffset
             for(int k = 0; k < noOfCells; k++){
-                LeafIndexCell leafIndexCell = new LeafIndexCell(tableFile, cellOffsets.get(k));
+                LeafIndexCell leafIndexCell = new LeafIndexCell(tableFile, (pageOffset + cellOffsets.get(k)));
                 cells.add(leafIndexCell);
             }
 
