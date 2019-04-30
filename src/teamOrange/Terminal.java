@@ -1,260 +1,234 @@
 package teamOrange;
-
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 import static java.lang.System.out;
-import static teamOrange.Mapper.*;
 
-
-/**
- *  @author Team Orange
- *  @version 0.0
- *  <b>
- *  <p>This is an example of how to create an interactive prompt</p>
- *  <p>There is also some guidance to get started with read/write of
- *     binary data files using RandomAccessFile class</p>
- *  </b>
- */
 public class Terminal {
-    /* This can be changed to whatever you like */
-    static boolean isExit = false;
-    /*
-     * Page size for alll files is 512 bytes by default.
-     * You may choose to make it user modifiable
-     */
+	public Terminal() {
+	}
+	
+	static Scanner scanner = new Scanner(System.in).useDelimiter(";");
+	static boolean isExit=false;
+	
+	public static void parseUserCommand(String userCommand) {
+		List<String> commandList = new ArrayList<String>(Arrays.asList(userCommand.split(" ")));
+		switch (commandList.get(0)) {
+		case "show":
+			if(commandList.get(1).equals("tables")) {
+				System.out.println("CASE: SHOW TABLES");
+				showTables();
+			}
+			else 
+				System.out.println("I didn't understand the command");			
+			break;
+		case "create":
+			if(commandList.get(1).equals("table")) {
+				System.out.println("CASE: CREATE TABLE");
+				createTable(commandList);
+			}
+			else if(commandList.get(1).equals("index")){
+				System.out.println("CASE: CREATE INDEX");
+				createIndex(commandList);
+			}
+			else 
+				System.out.println("I didn't understand the command");	
+			break;
+		case "drop":
+			if(commandList.get(1).equals("table") && commandList.size()==3) {
+				out.println("CASE: DROP");
+				dropTable(commandList.get(2));
+			}
+			else 
+				out.println("I didn't understand the command");
+			break;
+		case "insert":
+			out.println("CASE: INSERT");
+			insertInto(commandList);
+			break;
+		case "delete":
+			out.println("CASE: DELETE");
+			deleteFrom(commandList);
+			break;
+		case "update":
+			out.println("CASE: UPDATE");
+			UpdateRecord(commandList);
+			break;
+		case "select":
+			out.println("CASE: SELECT");
+			parseQuery(commandList);
+			break;	
+		case "exit":
+			isExit = true;
+			break;
+		default:
+			System.out.println("I didn't understand the command");
+			break;
+	}
+	}
+	
+	private static void UpdateRecord(List<String> commandList) {
+		
+		int index_set = commandList.indexOf("set");
+		int index_where = commandList.indexOf("where");
 
-    /*
-     *  The Scanner class is used to collect user commands from the prompt
-     *  There are many ways to do this. This is just one.
-     *
-     *  Each time the semicolon (;) delimiter is entered, the userCommand
-     *  String is re-populated.
-     */
-    static Scanner scanner = new Scanner(System.in).useDelimiter(";");
+		if ((index_where == -1) || (index_set == -1)) {
+			out.println("I didn't understand the query");
+			return;
+		}
+		
+		String tname = commandList.get(1);
+		ArrayList<String> set_cols = new ArrayList<String>();
+		ArrayList<String> set_vals = new ArrayList<String>();
+		
+		List<String> condition = commandList.subList(index_where + 1, commandList.size());
+		List<String> set = commandList.subList(index_set + 1, index_where);
+		
 
-    /** ***********************************************************************
-     *  teamOrange.Main method
-     */
-    public static void startTerminal(String[] args) {
+		// Add all columns and values
+		ArrayList<String> buffer = new ArrayList<String>();
+		
+		for (int i = 0; i < set.size(); i++) {
+			buffer.addAll(Arrays.asList(set.get(i).split(",|=")));	
+		}
+		
+		buffer.removeAll(Arrays.asList(""));
+	
+		int i = 0;
+		while (i + 1 < buffer.size()) {
+			set_cols.add(buffer.get(i));
+			i++;
+			set_vals.add(buffer.get(i));
+			i++;
+		}
+		
+		out.println(tname);
+		out.println(set_cols);
+		out.println(set_vals);
+		out.println(condition);
+		updateHelper(tname, set_cols, set_vals,condition);
+		
+	}
 
-        /* Display the welcome screen */
-        splashScreen();
+	private static void updateHelper(String tablename, ArrayList<String> set_cols, ArrayList<String> set_vals,
+			List<String> condition) {
+		// TODO Auto-generated method stub
+		
+	}
 
-        /* Variable to collect user input from the prompt */
-        String userCommand = "";
+	private static void deleteFrom(List<String> commandList) {
+		if (!commandList.get(1).equals("from") || !commandList.get(2).equals("table")
+				|| !commandList.get(4).equals("where")) {
+			out.println("I didn't understand the command");
+			return;
+		}
+		
+		List<String> condition = commandList.subList(5, commandList.size());
 
-        while(!isExit) {
-            System.out.print(prompt);
-            /* toLowerCase() renders command case insensitive */
-            userCommand = scanner.next().replace("\n", " ").replace("\r", "").trim().toLowerCase();
-            // userCommand = userCommand.replace("\n", "").replace("\r", "");
-            parseUserCommand(userCommand);
-        }
-        System.out.println("Exiting...");
+		deleteHelper(commandList.get(3),condition);
+		
+	}
 
+	private static void deleteHelper(String tablename, List<String> condition) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    }
+	private static void insertInto(List<String> commandList) {
+		ArrayList<String> col_values = new ArrayList<String>();
+		ArrayList<String> col_names = new ArrayList<String>();
+		
+		int index_values = commandList.indexOf("values");
 
-    /** ***********************************************************************
-     *  Static method definitions
-     */
+		if ((index_values == -1) || !commandList.get(1).equals("into") || !commandList.get(2).equals("table")) {
+			out.println("I didn't understand the query");
+			return;
+		}
 
-    /**
-     *  Display the splash screen
-     */
-    public static void splashScreen() {
-        System.out.println(line("-",80));
-        System.out.println("Welcome to Orange Flavored SQLLite"); // Display the string.
-        System.out.println("OrangeSQL Version " + getVersion());
-        System.out.println(getCopyright());
-        System.out.println("\nType \"help;\" to display supported commands.");
-        System.out.println(line("-",80));
-    }
+		String tname ;
+		List<String> cols = commandList.subList(3, index_values);
+		List<String> vals = commandList.subList(index_values + 1, commandList.size());
 
-    /**
-     * @param s The String to be repeated
-     * @param num The number of time to repeat String s.
-     * @return String A String object, which is the String s appended to itself num times.
-     */
-    public static String line(String s,int num) {
-        String a = "";
-        for(int i=0;i<num;i++) {
-            a += s;
-        }
-        return a;
-    }
+		// Add all columns name to col_names
+		for (int i = 0; i < cols.size(); i++) {
+			col_names.addAll(Arrays.asList(cols.get(i).split(",|\\(|\\)")));	
+		}
+		
+		tname = col_names.get(0);
+		col_names.remove(0);
+		
+		for (int i = 0; i < vals.size(); i++) {
+			col_values.addAll(Arrays.asList(vals.get(i).split(",|\\(|\\)")));	
+		}
+		
+		col_names.removeAll(Arrays.asList(""));
+		col_values.removeAll(Arrays.asList(""));
 
-    public static void printCmd(String s) {
-        System.out.println("\n\t" + s + "\n");
-    }
-    public static void printDef(String s) {
-        System.out.println("\t\t" + s);
-    }
+		out.println(tname);
+		out.println(col_names);
+		out.println(col_values);
+		
+		insertHelper(tname, col_names, col_values);
+		return;
+		
+	}
 
-    /**
-     *  Help: Display supported commands
-     */
-    public static void help() {
-        out.println(line("*",80));
-        out.println("SUPPORTED COMMANDS\n");
-        out.println("All commands below are case insensitive\n");
-        out.println("SHOW TABLES;");
-        out.println("\tDisplay the names of all tables.\n");
-        //printCmd("SELECT * FROM <table_name>;");
-        //printDef("Display all records in the table <table_name>.");
-        out.println("SELECT <column_list> FROM <table_name> [WHERE <condition>];");
-        out.println("\tDisplay table records whose optional <condition>");
-        out.println("\tis <column_name> = <value>.\n");
-        out.println("DROP TABLE <table_name>;");
-        out.println("\tRemove table data (i.e. all records) and its schema.\n");
-        out.println("UPDATE TABLE <table_name> SET <column_name> = <value> [WHERE <condition>];");
-        out.println("\tModify records data whose optional <condition> is\n");
-        out.println("VERSION;");
-        out.println("\tDisplay the program version.\n");
-        out.println("HELP;");
-        out.println("\tDisplay this help information.\n");
-        out.println("EXIT;");
-        out.println("\tExit the program.\n");
-        out.println(line("*",80));
-    }
+	private static void insertHelper(String tablename, ArrayList<String> col_names, ArrayList<String> col_values) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    /** return the DavisBase version */
-    public static String getVersion() {
-        return version;
-    }
+	private static void dropTable(String tablename) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    public static String getCopyright() {
-        return copyright;
-    }
+	private static void createIndex(List<String> commandList) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    public static void displayVersion() {
-        System.out.println("DavisBaseLite Version " + getVersion());
-        System.out.println(getCopyright());
-    }
+	private static void createTable(List<String> commandList) {
+		
+	}
 
-    public static void parseUserCommand (String userCommand) {
+	private static void showTables() {
+		List<String> tmp = new ArrayList<>();
+		tmp.add("table_name");
+		queryHelper(tmp,"davisbase_tables",new ArrayList<String>());
+	}
 
-        /* commandTokens is an array of Strings that contains one token per array element
-         * The first token can be used to determine the type of command
-         * The other tokens can be used to pass relevant parameters to each command-specific
-         * method inside each case statement */
-        // String[] commandTokens = userCommand.split(" ");
-        ArrayList<String> commandTokens = new ArrayList<String>(Arrays.asList(userCommand.split(" ")));
+	private static void parseQuery(List<String> commandList) {
+		int index_where = commandList.indexOf("where");
+		int index_from = commandList.indexOf("from");
 
+		if ((index_from == -1) || (index_where - index_from) != 2) {
+			System.out.println("I didn't understand the query");
+			return;
+		}
+		String table_name = commandList.get(index_from+1);
+		List<String> condition = commandList.subList(index_where + 1, commandList.size());
+		List<String> cols = commandList.subList(1, index_from);
+		System.out.println("table_name: "+table_name);
+		System.out.println("cols: "+cols);
+		System.out.println("condition: "+condition);
+		System.out.println("condition length: "+condition.size());
+		
+		queryHelper(cols,table_name,condition);
+	}
 
-        /*
-         *  This switch handles a very small list of hardcoded commands of known syntax.
-         *  You will want to rewrite this method to interpret more complex commands.
-         */
-        switch (commandTokens.get(0)) {
-            case "select":
-                System.out.println("CASE: SELECT");
-                parseQuery(userCommand);
-                break;
-            case "drop":
-                System.out.println("CASE: DROP");
-                dropTable(userCommand);
-                break;
-            case "create":
-                System.out.println("CASE: CREATE");
-                parseCreateTable(userCommand);
-                break;
-            case "update":
-                System.out.println("CASE: UPDATE");
-                parseUpdate(userCommand);
-                break;
-            case "help":
-                help();
-                break;
-            case "version":
-                displayVersion();
-                break;
-            case "exit":
-                isExit = true;
-                break;
-            case "quit":
-                isExit = true;
-            default:
-                System.out.println("I didn't understand the command: \"" + userCommand + "\"");
-                break;
-        }
-    }
+	private static void queryHelper(List<String> cols, String table_name, List<String> condition) {
+		// TODO Auto-generated method stub
+		
+	}
 
+	public static void main(String[] args) {
+		String userCommand="";
+		while(!isExit) {
+			userCommand = scanner.next().replace("\n", " ").replace("\r", "").trim().toLowerCase();
+			parseUserCommand(userCommand);
+		}
+	}
 
-    /**
-     *  Stub method for dropping tables
-     *  @param dropTableString is a String of the user input
-     */
-    public static void dropTable(String dropTableString) {
-        System.out.println("STUB: This is the dropTable method.");
-        System.out.println("\tParsing the string:\"" + dropTableString + "\"");
-    }
-
-    /**
-     *  Stub method for executing queries
-     *  @param queryString is a String of the user input
-     */
-    public static void parseQuery(String queryString) {
-        System.out.println("STUB: This is the parseQuery method");
-        System.out.println("\tParsing the string:\"" + queryString + "\"");
-    }
-
-    /**
-     *  Stub method for updating records
-     *  @param updateString is a String of the user input
-     */
-    public static void parseUpdate(String updateString) {
-        System.out.println("STUB: This is the dropTable method");
-        System.out.println("Parsing the string:\"" + updateString + "\"");
-    }
-
-
-    /**
-     *  Stub method for creating new tables
-     *
-     */
-    public static void parseCreateTable(String createTableString) {
-
-        System.out.println("STUB: Calling your method to create a table");
-        System.out.println("Parsing the string:\"" + createTableString + "\"");
-        ArrayList<String> createTableTokens = new ArrayList<String>(Arrays.asList(createTableString.split(" ")));
-
-        /* Define table file name */
-        String tableFileName = createTableTokens.get(2) + ".tbl";
-
-        /* YOUR CODE GOES HERE */
-
-        /*  Code to create a .tbl file to contain table data */
-        try {
-            /*  Create RandomAccessFile tableFile in read-write mode.
-             *  Note that this doesn't create the table file in the correct directory structure
-             */
-            teamOrange.Page Page1=new teamOrange.Page(tableFileName,1,interiorIndexBTreePage);
-            Page1.writeByteAt(5, (byte) 0xFC);
-            Page1.writeIntAt(7,43);
-            Page1.writeFloatAt(12, (float) 3.14);
-            Page1.writeStringAt(20,"Hello");
-
-            System.out.println(Integer.toHexString(Page1.readByteAt(5)));
-            System.out.println(Page1.readIntAt(7));
-            System.out.println(Page1.readFloatAt(12));
-            System.out.println(Page1.readStringAt(20,5));
-
-
-
-        }
-        catch(Exception e) {
-            System.out.println(e);
-        }
-
-        /*  Code to insert a row in the davisbase_tables table
-         *  i.e. database catalog meta-data
-         */
-
-        /*  Code to insert rows in the davisbase_columns table
-         *  for each column in the new table
-         *  i.e. database catalog meta-data
-         */
-    }
 }

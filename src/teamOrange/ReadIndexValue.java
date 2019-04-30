@@ -58,50 +58,50 @@ public class ReadIndexValue {
         return indexVal;
     }
 
-    public void WriteUnknown(RandomAccessFile table, ArrayList indexVal, byte dataType){
+    public void WriteUnknown(RandomAccessFile table, Object indexVal, byte dataType){
         try{
             switch(dataType){
                 case Mapper.typeCodeNull:
                     //figure this out, need to index null set attributes?
                     break;
                 case Mapper.typeCodeTinyInt:
-                    byte indexValByte = (byte) indexVal.get(0);
+                    byte indexValByte = (byte) indexVal;
                     table.writeByte(indexValByte);
                     break;
                 case Mapper.typeCodeSmallInt:
-                    short indexValShort = (short) indexVal.get(0);
+                    short indexValShort = (short) indexVal;
                     table.writeShort(indexValShort);
                     break;
                 case Mapper.typeCodeInt:
-                    int indexValInt = (int) indexVal.get(0);
+                    int indexValInt = (int) indexVal;
                     table.writeInt(indexValInt);
                     break;
                 case Mapper.typeCodeBigInt:
-                    long indexValBigInt = (long) indexVal.get(0);
+                    long indexValBigInt = (long) indexVal;
                     table.writeLong(indexValBigInt);
                     break;
                 case Mapper.typeCodeDouble:
-                    long indexValDouble = (long) indexVal.get(0);
+                    long indexValDouble = (long) indexVal;
                     table.writeLong(indexValDouble);
                     break;
                 case Mapper.typeCodeYear:
-                    byte indexValYear = (byte) indexVal.get(0);
+                    byte indexValYear = (byte) indexVal;
                     table.writeByte(indexValYear);
                     break;
                 case Mapper.typeCodeTime:
-                    int indexValTime = (int) indexVal.get(0);
+                    int indexValTime = (int) indexVal;
                     table.writeInt(indexValTime);
                     break;
                 case Mapper.typeCodeDateTime:
-                    long indexValDateTime = (long) indexVal.get(0);
+                    long indexValDateTime = (long) indexVal;
                     table.writeLong(indexValDateTime);
                     break;
                 case Mapper.typeCodeDate:
-                    long indexValDate = (long) indexVal.get(0);
+                    long indexValDate = (long) indexVal;
                     table.writeLong(indexValDate);
                     break;
                 case Mapper.typeCodeText:
-                    String indexValStr = (String) indexVal.get(0);
+                    String indexValStr = (String) indexVal;
                     table.writeBytes(indexValStr);
                     break;
             }

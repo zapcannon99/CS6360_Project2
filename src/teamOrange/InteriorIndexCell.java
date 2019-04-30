@@ -9,7 +9,21 @@ public class InteriorIndexCell extends Cell{
     byte numRids;
     byte dataType;
     Object indexVal;
-    ArrayList<Short> rids;
+    ArrayList<Integer> rids;
+
+    public InteriorIndexCell(){}
+
+    /*
+     * creates leaf index cell from given info in leaf table cell
+     *//*
+    public InteriorIndexCell(int rowid, byte dataTaype, Object indexVal){
+        this.leftChildPageNo
+        this.numRids = 1;
+        this.dataType = dataTaype;
+        DataElement dataElement = new DataElement(indexVal,dataType);
+        this.indexVal = dataElement.getValue();
+        this.bytesPayload = (short) (6 + dataElement.sizeof());
+    }*/
 
     /**
      * This constructor seeks the absolute offset given in the arguments and then reads the cell
@@ -35,13 +49,25 @@ public class InteriorIndexCell extends Cell{
             payload.add(new DataElement(indexVal,dataType));
 
             for(int i=0; i<numRids; i++)
-                rids.add(table.readShort());
+                rids.add(table.readInt());
             payload.add(new DataElement(rids));
 
         }
         catch(Exception e){
             System.out.println(e.toString());
         }
+    }
+
+    public InteriorIndexCell convertLeaftoInterior(int leftChildPageNo, LeafIndexCell leafIndexCell){
+        InteriorIndexCell newInteriorIndexCell = new InteriorIndexCell();
+        newInteriorIndexCell.leftChildPageNo = leftChildPageNo;
+        newInteriorIndexCell.bytesPayload = leafIndexCell.bytesPayload;
+        newInteriorIndexCell.numRids = leafIndexCell.numRids;
+        newInteriorIndexCell.dataType = leafIndexCell.dataType;
+        newInteriorIndexCell.indexVal = leafIndexCell.indexVal;
+        newInteriorIndexCell.rids = leafIndexCell.rids;
+
+        return newInteriorIndexCell;
     }
 
     public int getLeftChildPageNo(){
@@ -59,7 +85,7 @@ public class InteriorIndexCell extends Cell{
     public Object getIndexVal(){
         return indexVal;
     }
-    public ArrayList<Short> getRids(){
+    public ArrayList<Integer> getRids(){
         return rids;
     }
 }

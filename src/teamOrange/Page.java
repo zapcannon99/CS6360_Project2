@@ -23,6 +23,7 @@ public class Page {
     ArrayList<Short> cellOffsets;   // This is the arraylist of the offsets pointing to the cells
     ArrayList<Cell> cells;          // The idea is that this arraylist, when being read in, will be in the same order as cellOffsets
     int pageNo;
+    int parentPageNo;
     int pageOffset;                 // Where the page starts in the file
     RandomAccessFile tableFile;
 
@@ -51,7 +52,6 @@ public class Page {
                     // If you require it to make the entire directory path including parents,
                     // use directory.mkdirs(); here instead.
                 }
-
             }
 
             // Evil Joel is indexing starting 0, He changed it cuz files systems start indexing at 0 too
@@ -168,6 +168,10 @@ public class Page {
         noOfCells++;
     }
 
+    public void decNoOfCells(){
+        noOfCells--;
+    }
+
     public void updateStartOfCellContent(short offset){
         startOfCellContent = offset;
     }
@@ -220,6 +224,16 @@ public class Page {
         }
     }
 
+    public boolean SplitLimit(ArrayList<Cell> cells, ArrayList<Short> cellOffsets){
+        int bytesUsed = cells.size() + cellOffsets.size() + 9;
+        int bytesUsedPercent = bytesUsed / pageSize;
+        if(bytesUsedPercent >= 0.9)
+            return true;
+        else return false;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Other Auxillary Functions
     //------------------------------------------------------------------------------------------------------------------
     int readByteAt(int offset){
         if(offset>=pageSize)

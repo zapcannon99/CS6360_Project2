@@ -1,0 +1,19 @@
+/* find table named <table_name>
+ traverse every tuple for condition
+ show selected cols*/
+/the condition may need to separate into colums, values and operators/
+queryHelper(List<String> cols,String table_name,List<String> condition)
+
+
+createTable(List<String> commandList)
+
+createIndex(List<String> commandList)
+
+dropTable(String tablename) 
+
+insertHelper(String tablename, ArrayList<String> col_names, ArrayList<String> col_values) 
+
+deleteHelper(String tablename, List<String> condition)
+
+updateHelper(String tname, ArrayList<String> set_cols, ArrayList<String> set_vals,
+			List<String> condition)

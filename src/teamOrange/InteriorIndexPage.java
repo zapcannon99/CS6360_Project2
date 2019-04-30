@@ -43,7 +43,7 @@ public class InteriorIndexPage extends Page{
             // Then proceed to read the cells in an interior page
             tableFile.seek(pageOffset + startOfCellContent); //get rid pageOffset
             for(int k = 0; k < noOfCells; k++){
-                InteriorIndexCell interiorIndexCell = new InteriorIndexCell(tableFile, cellOffsets.get(k));
+                InteriorIndexCell interiorIndexCell = new InteriorIndexCell(tableFile, (pageOffset + cellOffsets.get(k)));
                 cells.add(interiorIndexCell);
             }
 
