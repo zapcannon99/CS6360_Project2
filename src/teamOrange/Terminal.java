@@ -176,7 +176,19 @@ public class Terminal {
 
 	private static void insertHelper(String tablename, ArrayList<String> col_names, ArrayList<String> col_values) {
 		// TODO Auto-generated method stub
-		
+		TableTree tableTree = new TableTree(tablename);
+		//for each column, insert the datatypes into an arraylist
+		DataElement dataElement = new DataElement();
+		ArrayList dataTypes = new ArrayList();
+		for(int i=0;i<col_values.size();i++) {
+			byte dataType = dataElement.getDatatye(col_values.get(i));
+			dataTypes.add(dataType);
+		}
+		ArrayList payload = new ArrayList();
+		payload.add(col_names.size());
+		payload.add(dataTypes);
+		payload.add(col_values);
+		tableTree.insert(payload);
 	}
 
 	private static void dropTable(String tablename) {
