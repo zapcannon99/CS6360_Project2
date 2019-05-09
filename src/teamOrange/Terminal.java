@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Iterator;
 import static java.lang.System.out;
 
 public class Terminal {
@@ -115,8 +114,6 @@ public class Terminal {
 	private static void updateHelper(String tablename, ArrayList<String> set_cols, ArrayList<String> set_vals,
 			List<String> condition) {
 		// TODO Auto-generated method stub
-
-
 		
 	}
 
@@ -135,7 +132,9 @@ public class Terminal {
 
 	private static void deleteHelper(String tablename, List<String> condition) {
 		// TODO Auto-generated method stub
-		
+		int rowId = Integer.parseInt(condition.get(2));
+		TableTree tableTree = new TableTree(tablename);
+		tableTree.delete(rowId);
 	}
 
 	private static void insertInto(List<String> commandList) {
@@ -179,11 +178,19 @@ public class Terminal {
 
 	private static void insertHelper(String tablename, ArrayList<String> col_names, ArrayList<String> col_values) {
 		// TODO Auto-generated method stub
-
-		TableTree table = new TableTree(tablename);
-
-
-		
+		TableTree tableTree = new TableTree(tablename);
+		//for each column, insert the datatypes into an arraylist
+		DataElement dataElement = new DataElement();
+		ArrayList dataTypes = new ArrayList();
+		for(int i=0;i<col_values.size();i++) {
+			byte dataType = dataElement.getDatatye(col_values.get(i));
+			dataTypes.add(dataType);
+		}
+		ArrayList payload = new ArrayList();
+		payload.add(col_names.size());
+		payload.add(dataTypes);
+		payload.add(col_values);
+		tableTree.insert(payload);
 	}
 
 	private static void dropTable(String tablename) {
@@ -193,29 +200,46 @@ public class Terminal {
 
 	private static void createIndex(List<String> commandList) {
 		// TODO Auto-generated method stub
-
-//		String tableName = commandList.get(3);
-//		ArrayList<String> indexList = new ArrayList<String>();
-//		indexList.add(commandList.get(4));
-//		String tableIndex = tableName + "Index.txt";
-//		File tableIndexFile = new File("c:/DavisBase/"+tableIndex);
-//		File catalog = new File("c:/DavisBase/catalog.txt");
-//		Catalog TableInfo = catalog.getTableInfo(tableName);
-//		int numRowids = TableInfo.recordCount;
-//		ArrayList indexVals = new ArrayList();
-//		TableTree tableTree = new TableTree();
-//		Cell record = null;
-//		if(tableIndexFile.exists()) {
-//			for(int i=1; i<=numRowids;i++) {
-//				record = tableTree.search(i);
-//				indexVals.add(record.payload.get(3));
-//			}
-//		}
+		String tableName = commandList.get(3);
+		//get all column names
+		ArrayList<String> indexList = new ArrayList<String>();
+		String indexColumnName = "indexColumnName";
+		While(indexColumnName.compareTo("")!=0){
+			indexColumnName = parse(commandList.get(4));
+			indexList.add(indexColumnName);
+		}
+		//create Catalog object
+		File catalogFile = new File("c:/DavisBase/catalog.txt");
+		Catalog catalog = new Catalog(catalogFile);
+		String tableIndex = tableName + "Index.txt";
+		File tableIndexFile = new File("c:/DavisBase/"+tableIndex);
+		//get record count of table
+		Catalog TableInfo = catalog.getTableInfo(tableName);
+		int numRowids = TableInfo.recordCount;
+		ArrayList indexVals = new ArrayList();
+		TableTree tableTree = new TableTree();
+		LeafTableCell record = null;
+		if(tableIndexFile.exists()){
+			System.out.println("Index File already exists");
+		}
+		//if there are already records inserted in the database, but not in the indexFile
+		//add all record to indexFile
+		else if(numRowids!=0) {
+			for(int i=1; i<=numRowids; i++) {
+				record = (LeafTableCell) tableTree.search(i);
+				IndexTree indexTree = new IndexTree();
+				indexTree.InsertCellIndeces(tableName,record);
+			}
+		}
+		//if there are no records inserted into the database yet
+		//just create a indexFile
+		else if(numRowids==0){
+			tableIndexFile.createNewFile();
+		}
 	}
 
 	private static void createTable(List<String> commandList) {
-		Iterator<String> iter = commandList.iterator();
-
+		
 	}
 
 	private static void showTables() {
@@ -245,7 +269,16 @@ public class Terminal {
 
 	private static void queryHelper(List<String> cols, String table_name, List<String> condition) {
 		// TODO Auto-generated method stub
-		
+		//find rowId of record with IndexTree and then get the record from the TableTree
+		IndexTree indexTree = new IndexTree();
+		TableTree tableTree = new TableTree();
+		ArrayList records = new ArrayList();
+		for(int i=0;i<cols.size();i++) {
+			int rowId = indexTree.QueryCellIndeces(table_name, cols.get(i));
+			LeafTableCell record = (LeafTableCell) tableTree.search(rowId);
+			System.out.println(record);
+			records.add(record);
+		}
 	}
 
 	public static void main(String[] args) {
