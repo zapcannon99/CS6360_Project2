@@ -187,21 +187,40 @@ public class Terminal {
 	private static void createIndex(List<String> commandList) {
 		// TODO Auto-generated method stub
 		String tableName = commandList.get(3);
+		//get all column names
 		ArrayList<String> indexList = new ArrayList<String>();
-		indexList.add(commandList.get(4));
+		String indexColumnName = "indexColumnName";
+		While(indexColumnName.compareTo("")!=0){
+			indexColumnName = parse(commandList.get(4));
+			indexList.add(indexColumnName);
+		}
+		//create Catalog object
+		File catalogFile = new File("c:/DavisBase/catalog.txt");
+		Catalog catalog = new Catalog(catalogFile);
 		String tableIndex = tableName + "Index.txt";
 		File tableIndexFile = new File("c:/DavisBase/"+tableIndex);
-		File catalog = new File("c:/DavisBase/catalog.txt");
+		//get record count of table
 		Catalog TableInfo = catalog.getTableInfo(tableName);
 		int numRowids = TableInfo.recordCount;
 		ArrayList indexVals = new ArrayList();
 		TableTree tableTree = new TableTree();
-		Cell record = null;
-		if(tableIndexFile.exists()) {
-			for(int i=1; i<=numRowids;i++) {
-				record = tableTree.search(i);
-				indexVals.add(record.payload.get(3));
+		LeafTableCell record = null;
+		if(tableIndexFile.exists()){
+			System.out.println("Index File already exists");
+		}
+		//if there are already records inserted in the database, but not in the indexFile
+		//add all record to indexFile
+		else if(numRowids!=0) {
+			for(int i=1; i<=numRowids; i++) {
+				record = (LeafTableCell) tableTree.search(i);
+				IndexTree indexTree = new IndexTree();
+				indexTree.InsertCellIndeces(tableName,record);
 			}
+		}
+		//if there are no records inserted into the database yet
+		//just create a indexFile
+		else if(numRowids==0){
+			tableIndexFile.createNewFile();
 		}
 	}
 
