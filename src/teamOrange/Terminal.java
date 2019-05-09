@@ -132,7 +132,9 @@ public class Terminal {
 
 	private static void deleteHelper(String tablename, List<String> condition) {
 		// TODO Auto-generated method stub
-		
+		int rowId = Integer.parseInt(condition.get(2));
+		TableTree tableTree = new TableTree(tablename);
+		tableTree.delete(rowId);
 	}
 
 	private static void insertInto(List<String> commandList) {
