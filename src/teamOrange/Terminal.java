@@ -255,7 +255,16 @@ public class Terminal {
 
 	private static void queryHelper(List<String> cols, String table_name, List<String> condition) {
 		// TODO Auto-generated method stub
-		
+		//find rowId of record with IndexTree and then get the record from the TableTree
+		IndexTree indexTree = new IndexTree();
+		TableTree tableTree = new TableTree();
+		ArrayList records = new ArrayList();
+		for(int i=0;i<cols.size();i++) {
+			int rowId = indexTree.QueryCellIndeces(table_name, cols.get(i));
+			LeafTableCell record = (LeafTableCell) tableTree.search(rowId);
+			System.out.println(record);
+			records.add(record);
+		}
 	}
 
 	public static void main(String[] args) {
