@@ -186,7 +186,23 @@ public class Terminal {
 
 	private static void createIndex(List<String> commandList) {
 		// TODO Auto-generated method stub
-		
+		String tableName = commandList.get(3);
+		ArrayList<String> indexList = new ArrayList<String>();
+		indexList.add(commandList.get(4));
+		String tableIndex = tableName + "Index.txt";
+		File tableIndexFile = new File("c:/DavisBase/"+tableIndex);
+		File catalog = new File("c:/DavisBase/catalog.txt");
+		Catalog TableInfo = catalog.getTableInfo(tableName);
+		int numRowids = TableInfo.recordCount;
+		ArrayList indexVals = new ArrayList();
+		TableTree tableTree = new TableTree();
+		Cell record = null;
+		if(tableIndexFile.exists()) {
+			for(int i=1; i<=numRowids;i++) {
+				record = tableTree.search(i);
+				indexVals.add(record.payload.get(3));
+			}
+		}
 	}
 
 	private static void createTable(List<String> commandList) {
