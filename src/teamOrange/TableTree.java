@@ -40,12 +40,13 @@ public class TableTree {
                     // If you require it to make the entire directory path including parents,
                     // use directory.mkdirs(); here instead.
                 }
-
             }
             this.table = new RandomAccessFile(path + tablename, "rw");
-            Page pg = new LeafTablePage(this.table, 0);
+            if(table.length() == 0){
+                Page pg = new LeafTablePage(this.table, 0);
+            }
         } catch(Exception e){
-            System.out.println(e);
+            System.out.println("ERROR: " + e);
         }
     }
 

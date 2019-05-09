@@ -30,6 +30,75 @@ public class DataElement {
      * Use this constructor for typeCodeNull. However, you can also use this constructor to manually make a DataElement;
      */
     public DataElement(){ datatype = typeCodeNull; }
+    public DataElement(String datatype, String value){
+        try{
+            switch(datatype) {
+                //case "null":
+                case "tinyint":
+                    setDatatype(typeCodeTinyInt);
+                    Byte.parseByte(value);
+                    break;
+                case "smallint":
+                    setDatatype(typeCodeSmallInt);
+                    Short.parseShort(value);
+                    break;
+                case "int":
+                    setDatatype(typeCodeInt);
+                    Integer.parseInt(value);
+                    break;
+                case "bigint":
+                case "long":
+                    setDatatype(typeCodeBigInt);
+                    Long.parseLong(value);
+                    break;
+                case "float":
+                case "real":
+                case "double":
+                    setDatatype(typeCodeDouble);
+                    Double.parseDouble(value);
+                    break;
+                case "datetime":
+                    setDatatype(typeCodeDateTime);
+                    String[] datetime = value.split("[-_:]");
+                    int year = Integer.parseInt(datetime[0]);
+                    int mo = Integer.parseInt(datetime[1]);
+                    int day = Integer.parseInt(datetime[2]);
+                    int hour = Integer.parseInt(datetime[3]);
+                    int minute = Integer.parseInt(datetime[3]);
+                    int second = Integer.parseInt(datetime[3]);
+                    Calendar c = Calendar.getInstance();
+                    c.set(year, mo, day, hour, minute, second);
+                    break;
+                case "year":
+                    setDatatype(typeCodeYear);
+                    year = Integer.parseInt(value);
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.YEAR, year);
+                    value_long = cal.getTimeInMillis();
+                    break;
+                case "time":
+                    setDatatype(typeCodeTime);
+                    String[] time = value.split(":");
+                    hour = Integer.parseInt(time[0]);
+                    minute = Integer.parseInt(time[1]);
+                    second = Integer.parseInt(time[2]);
+                    c = Calendar.getInstance();
+                    c.set(0, 0, 0, hour, minute, second);
+                    break;
+                case "date":
+                    setDatatype(typeCodeDate);
+                    break;
+                case "text":
+                    setDatatype(typeCodeTinyInt);
+                    break;
+                default:
+                    throw new Exception("Unidentified data type");
+            }
+        } catch(Exception e){
+            System.out.println("ERROR: " + e);
+        }
+    }
+
     public DataElement(byte value) { datatype = typeCodeTinyInt; value_long = (long)value; }
     public DataElement(short value) { datatype = typeCodeSmallInt; value_long = (long)value; }
     public DataElement(int value) { datatype = typeCodeInt; value_long = (long)value; }
